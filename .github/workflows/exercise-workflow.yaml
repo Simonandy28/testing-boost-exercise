@@ -1,0 +1,65 @@
+name: SSE CI/CD
+on:
+  push:
+    branches:
+      - main
+      - extend-tests
+  pull_request:
+    branches:
+      - main
+      - extend-tests
+
+jobs:
+  style-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run clang format check
+        uses: DoozyX/clang-format-lint-action@v0.16.2
+        with:
+          source: '.'
+          exclude: './build'
+          extensions: 'cpp,h,hpp'
+          clangFormatVersion: 16
+          style: file
+  build:
+      runs-on: ubuntu-latest
+      needs: style-check
+      steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libeigen3-dev libboost-test-dev libyaml-cpp-dev 
+      - name: Building project
+        run: |
+          mkdir -p build
+          cd build
+          cmake ..
+          make -j
+      - name: Upload Binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: testsidemade-Binary
+          path: build/testsidemade
+          retention-days: 1
+
+  test:  
+      runs-on: ubuntu-latest
+      needs:  build
+      steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libeigen3-dev libboost-test-dev libyaml-cpp-dev 
+      - name: Download Binary
+        uses: actions/download-artifact@v4
+        with:
+          name: testsidemade-Binary
+          path: build/
+      - name: Run Tests
+        run: |
+          chmod +x build/testsidemade
+          cd build
+          ./testsidemade

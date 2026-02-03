@@ -1,6 +1,7 @@
 # SIDEMADE - Simple Dense Matrix Decomposition
-
 A simple demo code to read dense matrices from files and solve linear systems with them.
+
+[![SSE CI/CD](https://github.com/Simonandy28/testing-boost-exercise/actions/workflows/exercise-workflow.yaml/badge.svg)](https://github.com/Simonandy28/testing-boost-exercise/actions/workflows/exercise-workflow.yaml)
 
 ## Folder Structure
 
